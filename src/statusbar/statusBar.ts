@@ -21,7 +21,7 @@ export class StatusBar {
     this.refreshStockStatusBar();
     this.bindEvents();
     /* events.on('updateConfig:leek-fund.statusBarStock',()=>{
-      
+
     }) */
   }
 
@@ -60,11 +60,16 @@ export class StatusBar {
     this.refreshStockStatusBar();
   }
 
+  toggleVisibility() {
+    LeekFundConfig.setConfig('leek-fund.hideStatusBar', !this.hideStatusBar);
+    this.refresh();
+  }
+
   refreshStockStatusBar() {
-    if (this.hideStatusBar||this.hideStatusBarStock || !this.stockService.stockList.length) {
-      if(this.statusBarList.length){
-        this.statusBarList.forEach((bar) =>bar.dispose());
-        this.statusBarList=[];
+    if (this.hideStatusBar || this.hideStatusBarStock || !this.stockService.stockList.length) {
+      if (this.statusBarList.length) {
+        this.statusBarList.forEach((bar) => bar.dispose());
+        this.statusBarList = [];
       }
       return;
     }
@@ -107,14 +112,13 @@ export class StatusBar {
       }
     }
     barStockList.forEach((stock, index) => {
-      this.udpateBarInfo(this.statusBarList[index], stock);
+      this.updateBarInfo(this.statusBarList[index], stock);
     });
   }
 
-  udpateBarInfo(stockBarItem: StatusBarItem, item: LeekTreeItem | null) {
+  updateBarInfo(stockBarItem: StatusBarItem, item: LeekTreeItem | null) {
     if (!item) return;
-
-    const { type, symbol, price, percent, open, yestclose, high, low, updown } = item.info;
+    const { code, percent, open, yestclose, high, low, updown, amount } = item.info;
     const deLow = percent.indexOf('-') === -1;
     /* stockBarItem.text = `「${this.stockService.showLabel ? item.info.name : item.id}」${price}  ${
       deLow ? '📈' : '📉'
@@ -125,7 +129,11 @@ export class StatusBar {
       icon: deLow ? '📈' : '📉',
     });
 
-    stockBarItem.tooltip = `「今日行情」${type}${symbol}\n涨跌：${updown}   百分：${percent}%\n最高：${high}   最低：${low}\n今开：${open}   昨收：${yestclose}`;
+    stockBarItem.tooltip = `「今日行情」 ${
+      item.info?.name ?? '今日行情'
+    }（${code}）\n涨跌：${updown}   百分：${percent}%\n最高：${high}   最低：${low}\n今开：${open}   昨收：${yestclose}\n成交额：${amount}\n更新时间：${
+      item.info?.time
+    }`;
     stockBarItem.color = deLow ? this.riseColor : this.fallColor;
     stockBarItem.command = {
       title: 'Change stock',
@@ -139,9 +147,9 @@ export class StatusBar {
 
   refreshFundStatusBar() {
     // 隐藏基金状态栏
-    if (this.hideStatusBar||this.hideFundBarItem) {
+    if (this.hideStatusBar || this.hideFundBarItem) {
       this.fundBarItem.hide();
-      return ;
+      return;
     }
 
     this.fundBarItem.text = `🐥$(pulse)`;
@@ -154,10 +162,11 @@ export class StatusBar {
   private getFundTooltipText() {
     let fundTemplate = '';
     for (let fund of this.fundService.fundList.slice(0, 14)) {
+      const detailInfo = fund.info || { percent: '' };
       fundTemplate += `${
-        fund.info.percent.indexOf('-') === 0 ? ' ↓ ' : fund.info.percent === '0.00' ? '' : ' ↑ '
-      } ${fund.info.percent}%   「${
-        fund.info.name
+        detailInfo.percent?.indexOf('-') === 0 ? ' ↓ ' : detailInfo.percent === '0.00' ? '' : ' ↑ '
+      } ${detailInfo.percent}%   「${
+        detailInfo.name
       }」\n--------------------------------------------\n`;
     }
     // tooltip 有限定高度，所以只展示最多14只基金

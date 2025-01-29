@@ -27,7 +27,7 @@ export default class Jin10FlushService extends NewsFlushServiceAbstractClass {
       this.ws.close();
       this.ws = void 0;
     }
-    const ws = new WebSocket('wss://wss-flash-1.jin10.com/');
+    const ws = new WebSocket('wss://wss-flash-2.jin10.com/');
     this.ws = ws;
     ws.binaryType = 'arraybuffer';
     ws.addEventListener('message', (msg: { data: Iterable<number> }) => {
@@ -44,14 +44,14 @@ export default class Jin10FlushService extends NewsFlushServiceAbstractClass {
 
     ws.addEventListener('error', (err: any) => {
       globalState.telemetry.sendEvent('error:jin10Service', { error: err });
-      console.log('金十快讯 ws 错误：', err);
+      console.log("🚀 ~ 金十快讯 ws 错误：Jin10FlushService ~ ws.addEventListener ~ err:", err);
     });
 
     ws.addEventListener('close', () => {
       console.log('金十快讯 ws 关闭');
       if (!this.isDone) {
         this.ws = void 0;
-        this.init();
+        setTimeout(() => this.init(), 10000);
       }
     });
   }
@@ -61,7 +61,7 @@ export default class Jin10FlushService extends NewsFlushServiceAbstractClass {
     this.heartbeatTimer && clearInterval(this.heartbeatTimer);
     this.ws?.close();
   }
-  pause() {}
+  pause() { }
   private sendHeartbeat() {
     this.heartbeatTimer = setInterval(() => {
       if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
@@ -83,7 +83,7 @@ export default class Jin10FlushService extends NewsFlushServiceAbstractClass {
     if (type === MSG_NEWS_FLASH) {
       const data = JSON.parse(bf.toString('utf-8', 4, 4 + dataLen));
       console.log('金十快讯: ', data);
-      const { type, time, important, remark, id, action, channel } = data;
+      const { type, time, id, action, channel } = data;
       if (
         ~this.idIndexs.indexOf(id) ||
         action !== 1 ||

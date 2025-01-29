@@ -41,8 +41,12 @@ http://j5.dfcfw.com/js/f10/f10_min_20200220153807.js
 // 历史净值
 http://fund.eastmoney.com/f10/F10DataApi.aspx?type=lsjz&code=001632&page=1&&sdate=2020-07-31
 
-股票实时数据，比如腾讯股票：
-https://hq.sinajs.cn/list=hk00700
+股票实时数据
+// 比如A股：
+https://hq.sinajs.cn/list=sh000001
+
+// 比如港股
+https://stock.xueqiu.com/v5/stock/batch/quote.json?symbol=HKHSI,00700
 
 // 基金实时数据（有几分钟延迟，插件基金数据使用的是此接口）
 // 比如诺安成长混合
@@ -179,7 +183,7 @@ http://blog.haoji.me/vscode-plugin-overview.html
 |GZTIME|估值的日期|
 
 ```
-https://fundmobapi.eastmoney.com/FundMNewApi/FundMNFInfo?pageIndex=1&pageSize=11&appType=ttjj&product=EFund&plat=Android&deviceid=9e16077fca2fcr78ep0ltn98&Version=1&Fcodes=161725,320007,001632,161726,001071,007874,004857,420009,377240,002207,004855
+https://fundmobapi.eastmoney.com/FundMNewApi/FundMNFInfo?pageIndex=1&pageSize=11&appType=ttjj&product=EFund&plat=Android&deviceid=9e16077fca2fcr78ep0ltn98&Version=1&Fcodes=161725,377240,002207,270023
 ```
 
 - 获取基金历史净值

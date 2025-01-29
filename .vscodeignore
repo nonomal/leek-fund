@@ -2,8 +2,8 @@
 .vscode-test/**
 out/test/**
 src/**
-template-packages
-demo/
+template-packages/**
+demo/**
 screenshot/
 .gitignore
 vsc-extension-quickstart.md
@@ -11,3 +11,7 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
+screenshot/**
+index.md
+document.md
+development.md

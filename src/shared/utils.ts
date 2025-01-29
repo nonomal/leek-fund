@@ -17,7 +17,7 @@ const formatNum = (n: number) => {
 
 export const objectToQueryString = (queryParameters: Object): string => {
   return queryParameters
-    ? Object.entries(queryParameters).reduce((queryString, [key, val], index) => {
+    ? Object.entries(queryParameters).reduce((queryString, [key, val]) => {
         const symbol = queryString.length === 0 ? '?' : '&';
         queryString += typeof val !== 'object' ? `${symbol}${key}=${val}` : '';
         return queryString;
@@ -341,15 +341,19 @@ export function allMarkets(): Array<string> {
   const stocks: Array<string> = LeekFundConfig.getConfig('leek-fund.stocks');
   stocks.forEach((item: string) => {
     let market = StockCategory.NODATA;
-    if (/^(sh|sz)/.test(item)) {
+    if (/^(sh|sz|bj)/.test(item)) {
       market = StockCategory.A;
     } else if (/^(hk)/.test(item)) {
       market = StockCategory.HK;
     } else if (/^(usr_)/.test(item)) {
       market = StockCategory.US;
-    } else if (/^(cnf_)/.test(item)) {
+    } else if (/^(nf_)/.test(item)) {
       market = StockCategory.Future;
-    } 
+    } else if (/^[A-Z]+/.test(item)) {
+      market = StockCategory.Future;
+    } else if (/^(hf_)/.test(item)) {
+      market = StockCategory.OverseaFuture;
+    }
     if (!result.includes(market)) {
       result.push(market);
     }
@@ -364,6 +368,7 @@ export function allStockTimes(): Map<string, Array<number>> {
   // TODO: 判断夏令时,夏令时交易时间为[21, 4]，非夏令时交易时间为[22, 5]
   stocks.set(StockCategory.US, [21, 5]);
   stocks.set(StockCategory.Future, [21, 15]);
+  stocks.set(StockCategory.OverseaFuture, [9, 7]);
   return stocks;
 }
 
@@ -444,7 +449,10 @@ function isRemoteLink(link: string) {
   return /^(https?|vscode-webview-resource|javascript):/.test(link);
 }
 
-export function formatHTMLWebviewResourcesUrl(html: string, conversionUrlFn: (link: string) => string) {
+export function formatHTMLWebviewResourcesUrl(
+  html: string,
+  conversionUrlFn: (link: string) => string
+) {
   const LinkRegexp = /\s?(?:src|href)=('|")(.*?)\1/gi;
   let matcher = LinkRegexp.exec(html);
 
@@ -514,12 +522,24 @@ export function formatLabelString(str: string, params: Record<string, any>) {
 
 export function getWebviewResourcesUrl(
   webview: vscode.Webview,
-  _extensionUri: vscode.Uri,
-  args: string[]
+  args: string[],
+  _extensionUri: vscode.Uri = globalState.context.extensionUri
 ) {
   return args.map((arg) => {
     return webview.asWebviewUri(
       vscode.Uri.parse([_extensionUri.toString(), 'template', arg].join('/'))
+    );
+  });
+}
+
+export function getResourcesImageSrc(
+  webview: vscode.Webview,
+  args: string[],
+  _extensionUri: vscode.Uri = globalState.context.extensionUri
+) {
+  return args.map((arg) => {
+    return webview.asWebviewUri(
+      vscode.Uri.parse([_extensionUri.toString(), 'resources', 'images', arg].join('/'))
     );
   });
 }

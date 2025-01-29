@@ -1,5 +1,5 @@
 // 支持的股票类型
-export const STOCK_TYPE = ['sh', 'sz', 'hk', 'gb', 'us'];
+export const STOCK_TYPE = ['sh', 'sz', 'bj', 'hk', 'gb', 'us'];
 
 export enum SortType {
   NORMAL = 0, // 基金默认顺序
@@ -11,10 +11,12 @@ export enum SortType {
 
 export enum IconType {
   ARROW = 'arrow',
+  ARROW1 = 'arrow1',
   FOOD1 = 'food1',
   FOOD2 = 'food2',
   FOOD3 = 'food3',
   ICON_FOOD = 'iconfood',
+  NONE = 'none',
 }
 
 /** Tree Item Type */
@@ -25,8 +27,9 @@ export enum TreeItemType {
   STOCK = 'stock',
   /** 币安 */
   BINANCE = 'binance',
+  /** 外汇 */
+  FOREX = 'forex',
 }
-
 export interface IAmount {
   name: string;
   price: number | string;
@@ -70,6 +73,15 @@ export interface FundInfo {
   showEarnings?: boolean;
   isStock?: boolean;
   _itemType?: TreeItemType;
+  spotBuyPrice?: number; // 现汇买入价
+  cashBuyPrice?: number; // 现钞买入价
+  spotSellPrice?: number; // 现汇卖出价
+  cashSellPrice?: number; // 现钞卖出价
+  conversionPrice?: number; // 中行折算价
+  publishDateTime?: string; // 发布日期：年月日 时分秒
+  publishTime?: string; // 发布时间：时分秒
+  heldAmount?: number; // 持仓数
+  heldPrice?: number; // 持仓价
 }
 
 export const defaultFundInfo: FundInfo = {
@@ -85,6 +97,7 @@ export enum StockCategory {
   US = 'US Stock',
   HK = 'HK Stock',
   Future = 'CN Future',
+  OverseaFuture = 'Oversea Future',
   NODATA = 'Not Support Stock',
 }
 
@@ -94,3 +107,20 @@ export interface ProfitStatusBarInfo {
   fundAmount: number;
   priceDate: string;
 }
+
+export type HeldData = {
+  heldAmount?: number;
+  heldPrice?: number;
+};
+
+export type ForexData = {
+  name: string;
+  filter: ((code: string) => boolean) | RegExp;
+  spotBuyPrice?: number; // 现汇买入价
+  cashBuyPrice?: number; // 现钞买入价
+  spotSellPrice?: number; // 现汇卖出价
+  cashSellPrice?: number; // 现钞卖出价
+  conversionPrice?: number; // 中行折算价
+  publishDateTime?: string; // 发布日期：年月日 时分秒
+  publishTime?: string; // 发布时间：时分秒
+};
